@@ -641,6 +641,220 @@ func Test_service_checkFilter(t *testing.T) {
 			},
 			expected: true,
 		},
+		{
+			name: "match_multiple_fields_1",
+			args: args{
+				announce: domain.Announce{
+					TorrentName: "That Movie 2020 2160p BluRay DD5.1 x264-GROUP1",
+					Category:    "Movies",
+					Freeleech:   true,
+				},
+				filter: domain.Filter{
+					Enabled: true,
+					FilterAdvanced: domain.FilterAdvanced{
+						MatchCategories: "Movies",
+					},
+					FilterTVMovies: domain.FilterTVMovies{
+						Resolutions: []string{"2160p"},
+						Sources:     []string{"BluRay"},
+						Years:       "2020",
+					},
+					FilterP2P: domain.FilterP2P{
+						MatchReleaseGroups: "GROUP1",
+						MatchReleases:      "That movie",
+						Freeleech:          true,
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			name: "shows_3",
+			args: args{
+				announce: domain.Announce{
+					TorrentName: "Popular show S06 1080p NF WEB-DL DDP 5.1 x264-GROUP",
+					Category:    "TV",
+				},
+				filter: domain.Filter{
+					Enabled: true,
+					FilterTVMovies: domain.FilterTVMovies{
+						Shows: "That?show*, The?Other?show, Popular show",
+					},
+					FilterAdvanced: domain.FilterAdvanced{
+						MatchCategories: "TV",
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			name: "shows_3",
+			args: args{
+				announce: domain.Announce{
+					TorrentName: "This cool movie AKA La cool movie 1969 UHD BluRay 2160p FLAC 2.0 DV HEVC REMUX-GROUP ",
+					Category:    "Movies",
+				},
+				filter: domain.Filter{
+					Enabled: true,
+					FilterTVMovies: domain.FilterTVMovies{
+						Shows: "That movie, This cool movie, Some other Movie",
+					},
+					FilterAdvanced: domain.FilterAdvanced{
+						MatchCategories: "Movies",
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			name: "shows_3",
+			args: args{
+				announce: domain.Announce{
+					TorrentName: "Show.S01E07.iNTERNAL.DV.2160p.WEB.H265-GROUP",
+					Category:    "TV",
+				},
+				filter: domain.Filter{
+					Enabled: true,
+					FilterTVMovies: domain.FilterTVMovies{
+						Shows: "That show, Show, Some other show",
+					},
+					FilterAdvanced: domain.FilterAdvanced{
+						MatchCategories: "TV",
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			name: "shows_3",
+			args: args{
+				announce: domain.Announce{
+					TorrentName: "Show.S01E07.iNTERNAL.DV.2160p.WEB.H265-GROUP",
+					Category:    "TV",
+				},
+				filter: domain.Filter{
+					Enabled: true,
+					FilterTVMovies: domain.FilterTVMovies{
+						Shows: "That show, Show, Some other show",
+					},
+					FilterAdvanced: domain.FilterAdvanced{
+						MatchCategories: "TV",
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			name: "shows_3",
+			args: args{
+				announce: domain.Announce{
+					TorrentName: "Show.S01E07.iNTERNAL.DV.2160p.WEB.H265-GROUP",
+					Category:    "TV",
+				},
+				filter: domain.Filter{
+					Enabled: true,
+					FilterTVMovies: domain.FilterTVMovies{
+						Shows: "That show, Show, Some other show",
+					},
+					FilterAdvanced: domain.FilterAdvanced{
+						MatchCategories: "TV",
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			name: "freeleech_percent_1",
+			args: args{
+				announce: domain.Announce{
+					TorrentName:      "Show.S01E07.iNTERNAL.DV.2160p.WEB.H265-GROUP",
+					Category:         "TV",
+					FreeleechPercent: "100",
+				},
+				filter: domain.Filter{
+					Enabled: true,
+					FilterTVMovies: domain.FilterTVMovies{
+						Shows: "That show, Show, Some other show",
+					},
+					FilterP2P: domain.FilterP2P{
+						FreeleechPercent: "100",
+					},
+					FilterAdvanced: domain.FilterAdvanced{
+						MatchCategories: "TV",
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			name: "freeleech_percent_2",
+			args: args{
+				announce: domain.Announce{
+					TorrentName:      "Show.S01E07.iNTERNAL.DV.2160p.WEB.H265-GROUP",
+					Category:         "TV",
+					FreeleechPercent: "100",
+				},
+				filter: domain.Filter{
+					Enabled: true,
+					FilterTVMovies: domain.FilterTVMovies{
+						Shows: "That show, Show, Some other show",
+					},
+					FilterP2P: domain.FilterP2P{
+						FreeleechPercent: "50,75%,100",
+					},
+					FilterAdvanced: domain.FilterAdvanced{
+						MatchCategories: "TV",
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			name: "freeleech_percent_3",
+			args: args{
+				announce: domain.Announce{
+					TorrentName:      "Show.S01E07.iNTERNAL.DV.2160p.WEB.H265-GROUP",
+					Category:         "TV",
+					FreeleechPercent: "100",
+				},
+				filter: domain.Filter{
+					Enabled: true,
+					FilterTVMovies: domain.FilterTVMovies{
+						Shows: "That show, Show, Some other show",
+					},
+					FilterP2P: domain.FilterP2P{
+						FreeleechPercent: "25-100",
+					},
+					FilterAdvanced: domain.FilterAdvanced{
+						MatchCategories: "TV",
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			name: "freeleech_percent_4",
+			args: args{
+				announce: domain.Announce{
+					TorrentName:      "Show.S01E07.iNTERNAL.DV.2160p.WEB.H265-GROUP",
+					Category:         "TV",
+					FreeleechPercent: "10",
+				},
+				filter: domain.Filter{
+					Enabled: true,
+					FilterTVMovies: domain.FilterTVMovies{
+						Shows: "That show, Show, Some other show",
+					},
+					FilterP2P: domain.FilterP2P{
+						FreeleechPercent: "25,50%-100",
+					},
+					FilterAdvanced: domain.FilterAdvanced{
+						MatchCategories: "TV",
+					},
+				},
+			},
+			expected: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -1,13 +1,10 @@
 package filter
 
 import (
-	"strings"
-
 	"github.com/rs/zerolog/log"
 
 	"github.com/autobrr/autobrr/internal/domain"
 	"github.com/autobrr/autobrr/internal/indexer"
-	"github.com/autobrr/autobrr/pkg/wildcard"
 )
 
 type Service interface {
@@ -204,139 +201,4 @@ func (s *service) Delete(filterID int) error {
 	}
 
 	return nil
-}
-
-// checkFilter tries to match filter against announce
-func (s *service) checkFilter(filter domain.Filter, announce domain.Announce) bool {
-
-	if !filter.Enabled {
-		return false
-	}
-
-	if filter.Scene && announce.Scene != filter.Scene {
-		return false
-	}
-
-	if filter.Freeleech && announce.Freeleech != filter.Freeleech {
-		return false
-	}
-
-	if filter.Shows != "" && !checkFilterStrings(announce.TorrentName, filter.Shows) {
-		return false
-	}
-
-	//if filter.Seasons != "" && !checkFilterStrings(announce.TorrentName, filter.Seasons) {
-	//	return false
-	//}
-	//
-	//if filter.Episodes != "" && !checkFilterStrings(announce.TorrentName, filter.Episodes) {
-	//	return false
-	//}
-
-	// matchRelease
-	if filter.MatchReleases != "" && !checkFilterStrings(announce.TorrentName, filter.MatchReleases) {
-		return false
-	}
-
-	if filter.MatchReleaseGroups != "" && !checkFilterStrings(announce.TorrentName, filter.MatchReleaseGroups) {
-		return false
-	}
-
-	if filter.ExceptReleaseGroups != "" && checkFilterStrings(announce.TorrentName, filter.ExceptReleaseGroups) {
-		return false
-	}
-
-	if filter.MatchUploaders != "" && !checkFilterStrings(announce.Uploader, filter.MatchUploaders) {
-		return false
-	}
-
-	if filter.ExceptUploaders != "" && checkFilterStrings(announce.Uploader, filter.ExceptUploaders) {
-		return false
-	}
-
-	if len(filter.Resolutions) > 0 && !checkFilterSlice(announce.TorrentName, filter.Resolutions) {
-		return false
-	}
-
-	if len(filter.Codecs) > 0 && !checkFilterSlice(announce.TorrentName, filter.Codecs) {
-		return false
-	}
-
-	if len(filter.Sources) > 0 && !checkFilterSlice(announce.TorrentName, filter.Sources) {
-		return false
-	}
-
-	if len(filter.Containers) > 0 && !checkFilterSlice(announce.TorrentName, filter.Containers) {
-		return false
-	}
-
-	if filter.Years != "" && !checkFilterStrings(announce.TorrentName, filter.Years) {
-		return false
-	}
-
-	if filter.MatchCategories != "" && !checkFilterStrings(announce.Category, filter.MatchCategories) {
-		return false
-	}
-
-	if filter.ExceptCategories != "" && checkFilterStrings(announce.Category, filter.ExceptCategories) {
-		return false
-	}
-
-	if filter.Tags != "" && !checkFilterStrings(announce.Tags, filter.Tags) {
-		return false
-	}
-
-	if filter.ExceptTags != "" && checkFilterStrings(announce.Tags, filter.ExceptTags) {
-		return false
-	}
-
-	return true
-}
-
-func checkFilterSlice(name string, filterList []string) bool {
-	name = strings.ToLower(name)
-
-	for _, filter := range filterList {
-		filter = strings.ToLower(filter)
-		// check if line contains * or ?, if so try wildcard match, otherwise try substring match
-		a := strings.ContainsAny(filter, "?|*")
-		if a {
-			match := wildcard.Match(filter, name)
-			if match {
-				return true
-			}
-		} else {
-			b := strings.Contains(name, filter)
-			if b {
-				return true
-			}
-		}
-	}
-
-	return false
-}
-
-func checkFilterStrings(name string, filterList string) bool {
-	filterSplit := strings.Split(filterList, ",")
-	name = strings.ToLower(name)
-
-	for _, s := range filterSplit {
-		s = strings.ToLower(s)
-		// check if line contains * or ?, if so try wildcard match, otherwise try substring match
-		a := strings.ContainsAny(s, "?|*")
-		if a {
-			match := wildcard.Match(s, name)
-			if match {
-				return true
-			}
-		} else {
-			b := strings.Contains(name, s)
-			if b {
-				return true
-			}
-		}
-
-	}
-
-	return false
 }
